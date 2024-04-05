@@ -1,86 +1,83 @@
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 
-class AviaSoulsTest {
+public class AviaSoulsTest {
+    AviaSouls souls = new AviaSouls();
 
-    @Test
-    public void shouldSortByPricePositive() {
-        Ticket ticket1 = new Ticket("moscow", "samara", 15_000, 21, 23);
-        Ticket ticket2 = new Ticket("moscow", "rostov on don", 8_000, 15, 17);
+    Ticket ticket1 = new Ticket("Уфа", "Москва", 3_000, 20, 22);
+    Ticket ticket2 = new Ticket("Москва", "Самара", 20_000, 12, 20);
+    Ticket ticket3 = new Ticket("Самара", "Уфа", 3_000, 14, 14);
+    Ticket ticket4 = new Ticket("Москва", "Самара", 35_000, 14, 18);
+    Ticket ticket5 = new Ticket("Москва", "Самара", 15_000, 12, 22);
 
-        int expect = 1;
-        int actual = ticket1.compareTo(ticket2);
-        Assertions.assertEquals(expect, actual);
+    @BeforeEach
+    public void setup() {
+        souls.add(ticket1);
+        souls.add(ticket2);
+        souls.add(ticket3);
+        souls.add(ticket4);
+        souls.add(ticket5);
     }
 
     @Test
-    public void shouldSortByPriceNegative() {
-        Ticket ticket1 = new Ticket("moscow", "samara", 15_000, 21, 23);
-        Ticket ticket2 = new Ticket("moscow", "rostov on don", 8_000, 15, 17);
+    public void testCompareToTicketLess() {
 
-        int expect = -1;
-        int actual = ticket2.compareTo(ticket1);
-        Assertions.assertEquals(expect, actual);
+        int expected = -1;
+        int actual = ticket1.compareTo(ticket4);
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void shouldSortByPriceEqual() {
-        Ticket ticket3 = new Ticket("moscow", "volgograd", 5_000, 16, 17);
+    public void testCompareToTicketMore() {
 
-        int expect = 0;
-        int actual = ticket3.compareTo(ticket3);
-        Assertions.assertEquals(expect, actual);
+        int expected = 1;
+        int actual = ticket4.compareTo(ticket2);
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void shouldSortByPriceFromManager() {
-        Ticket ticket1 = new Ticket("moscow", "samara", 15_000, 21, 23);
-        Ticket ticket6 = new Ticket("moscow", "samara", 8_000, 21, 23);
+    public void testCompareToTicketEqual() {
 
-        AviaSouls manager = new AviaSouls();
-        manager.add(ticket1);
-        manager.add(ticket6);
-        Ticket[] expect = {ticket6, ticket1};
-        Ticket[] actual = manager.search("moscow", "samara");
-        Assertions.assertArrayEquals(expect, actual);
+        int expected = 0;
+        int actual = ticket1.compareTo(ticket3);
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void shouldSortByFlyingTimeUsingComparator() {
-        Ticket ticket1 = new Ticket("moscow", "samara", 15_000, 15, 20);
-        Ticket ticket2 = new Ticket("moscow", "rostov on don", 8_000, 15, 17);
-        Ticket ticket3 = new Ticket("moscow", "volgograd", 5_000, 15, 18);
+    public void testSearchSortPrice() {
 
+        Ticket[] actual = souls.search("Москва", "Самара");
+        Ticket[] expected = {ticket5, ticket2, ticket4};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testSearchDesiredTicket() {
+
+        Ticket[] actual = souls.search("Самара", "Уфа");
+        Ticket[] expected = {ticket3};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testSearchNotFoundTicket() {
+
+        Ticket[] actual = souls.search("Уфа", "Самара");
+        Ticket[] expected = {};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testSearchAndSortByComparator() {
         TicketTimeComparator timeComparator = new TicketTimeComparator();
-        Ticket[] tickets = {ticket1, ticket2, ticket3};
-        Arrays.sort(tickets, timeComparator);
 
-        Ticket[] expect = {ticket2, ticket3, ticket1};
-
-        Assertions.assertArrayEquals(expect, tickets);
-    }
-
-    @Test
-    public void shouldSortByFlyingTimeUsingManager() {
-        Ticket ticket1 = new Ticket("moscow", "samara", 15_000, 15, 20);
-        Ticket ticket2 = new Ticket("moscow", "samara", 8_000, 15, 17);
-        Ticket ticket3 = new Ticket("moscow", "samara", 5_000, 15, 18);
-        Ticket ticket4 = new Ticket("moscow", "samara", 6_000, 15, 18);
-        Ticket ticket5 = new Ticket("moscow", "vladivostok", 15_000, 21, 23);
-        Ticket ticket6 = new Ticket("volgograd", "moscow", 8_000, 15, 17);
-
-        AviaSouls manager = new AviaSouls();
-        TicketTimeComparator timeComparator = new TicketTimeComparator();
-        manager.add(ticket1);
-        manager.add(ticket2);
-        manager.add(ticket3);
-        manager.add(ticket4);
-        manager.add(ticket5);
-        manager.add(ticket6);
-        Ticket[] expect = {ticket2, ticket3, ticket4, ticket1};
-        Ticket[] actual = manager.searchAndSortBy("moscow", "samara", timeComparator);
-        Assertions.assertArrayEquals(expect, actual);
+        Ticket[] actual = souls.searchAndSortBy("Москва", "Самара", timeComparator);
+        Ticket[] expected = {ticket4, ticket2, ticket5};
+        Assertions.assertArrayEquals(expected, actual);
     }
 }

@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Ticket implements Comparable<Ticket> {
     private String from; // аэропорт откуда
     private String to; // аэропорт куда
@@ -21,9 +23,9 @@ public class Ticket implements Comparable<Ticket> {
         return to;
     }
 
-//    public int getPrice() {
-//        return price;
-//    }
+    public int getPrice() {
+        return price;
+    }
 
     public int getTimeFrom() {
         return timeFrom;
@@ -31,6 +33,19 @@ public class Ticket implements Comparable<Ticket> {
 
     public int getTimeTo() {
         return timeTo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ticket ticket = (Ticket) o;
+        return price == ticket.price && timeFrom == ticket.timeFrom && timeTo == ticket.timeTo && from.equals(ticket.from) && to.equals(ticket.to);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(from, to, price, timeFrom, timeTo);
     }
 
     @Override
@@ -42,5 +57,15 @@ public class Ticket implements Comparable<Ticket> {
         } else {
             return 0;
         }
+    }
+
+    public int timeFlight() {
+        int result;
+        if (timeFrom >= timeTo) {
+            result = (24 - timeFrom) + timeTo;
+        } else {
+            result = timeTo - timeFrom;
+        }
+        return result;
     }
 }
